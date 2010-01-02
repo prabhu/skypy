@@ -9,6 +9,7 @@ Author: Prabhu Subramanian
 from config import *
 import json
 import urllib2
+from datetime import datetime as dt
 
 def _getURL(url):
     """
@@ -34,6 +35,12 @@ class epg(object):
     def channels(self, genreFilter=None, cnoFilter=None, cidFilter=None):
         """
         Method to get list of channels with some basic filtering.
+        
+        @param genreFilter: List of genres to be used for filtering
+        @param cnoFilter: List of channels numbers for filtering.
+        @param cidFilter: List of channel ids for filtering
+        
+        @return List of channels
         """
         channels = self._getInitData().get('channels', None)
         if not channels:
@@ -52,9 +59,17 @@ class epg(object):
         """
         return self._getInitData().get('epggenre', None)
     
+    def channelIds(self):
+        """
+        Method to return all channel ids
+        """
+        return [channel.get('channelid') for channel in self.channels()]
+        
     def channelsByGenre(self, genreFilter=None):
         """
         Method to get channels grouped by genre
+        
+        @param genreFilter: List of genre id for filtering.
         """
         genreId = [g.get('genreid') for g in self.genres()]
         if genreFilter and len(genreFilter) > 0:
@@ -71,6 +86,8 @@ class epg(object):
     def channelsByGenreName(self, genreName=None):
         """
         Method to get channels by genre name
+
+        @param genreName: Genre name
         """
         if not genreName:
             return None
@@ -98,13 +115,29 @@ class epg(object):
         Convenient method to get all news channels
         """
         return self.channelsByGenreName('news')
-
+    
+    def programmes(self, channelFilter=None, duration=24 * 60, time=dt.now().strftime('%Y%m%d%H%M'), detail=2):
+        """
+        Method to retrieve programme details for a channel.
+        
+        @param channelFilter: List of channel ids for filtering.
+        @param duration: Duration in minutes
+        @param time: Start time for the data. Default Current minute. Format - %Y%m%d%H%M
+        @param detail: Level of details required. 2 retrieves short desc. 1 basic data. Not sure about all possible values.
+        """
+        if not channelFilter:
+            channelFilter = self.channelIds()        
+        data = _getURL(EPG_DET_URL%dict(duration=duration, detail=detail, time=time, channels=','.join(channelFilter)))
+        return json.loads(data)
+                
 def main():
     e = epg()
     #print e.channels()
     #print e.genres()
     #print e.channelsByGenre()
-    print e.movieChannels()
+    #print e.movieChannels()
+    #print e.channelIds()
+    print e.programmes(channelFilter=['2002',])
     
 if __name__ == "__main__":
     main()
