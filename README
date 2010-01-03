@@ -1,2 +1,15 @@
 skypy - Python api for Sky tv (UK)
 
+Currently supports retrieving EPG data.
+
+Usage
+------
+from skypy.epg import epg
+e = epg()
+print e.programmes(channelFilter=['2002',])
+
+Supports a number of api to retrieve channels and programmes.
+
+TODO
+----
+- API for remote record.

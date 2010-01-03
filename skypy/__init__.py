@@ -1,1 +1,1 @@
-VERSION=1.0
+__VERSION__=1.0
