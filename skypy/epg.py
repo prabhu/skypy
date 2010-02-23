@@ -137,7 +137,7 @@ def main():
     #print e.channelsByGenre()
     #print e.movieChannels()
     #print e.channelIds()
-    print e.programmes(channelFilter=['2002',])
+    print e.programmes(channelFilter=['1002',])
     
 if __name__ == "__main__":
     main()
